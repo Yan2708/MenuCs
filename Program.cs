@@ -3,25 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace CHANGENAME
+namespace Menu
 {
-    internal class Program
+    internal class Menu
     {
         static MethodInfo[] Methods;
-        static Program()
+        static Menu()
         {
             Methods = typeof(Exo).GetMethods(BindingFlags.Static | BindingFlags.Public);
         }
-        static void Main(string[] args)
+        static void Launch()
         {
             while (true)
             {
-                Menu();
+                MenuPrint();
                 string input = Console.ReadLine();
-                if(input == "exit")
+                if (input == "exit")
                     return;
 
-                if(int.TryParse(input, out int index))
+                if (int.TryParse(input, out int index))
                 {
                     InvokeMethod(index);
                 }
@@ -33,11 +33,11 @@ namespace CHANGENAME
             }
         }
 
-        static void Menu()
+        static void MenuPrint()
         {
             Console.WriteLine("\nMenu");
             MethodInfo[] ok = typeof(Exo).GetMethods(BindingFlags.Static);
-            for (int i=0;i<Methods.Length;i++)
+            for (int i = 0; i < Methods.Length; i++)
             {
                 Console.WriteLine($"{i} {Methods[i].Name}");
             }
@@ -51,14 +51,15 @@ namespace CHANGENAME
             object[] args = new object[parameters.Length];
             Console.WriteLine(method.Name);
             Console.WriteLine("Parameters : if array separate values with ','");
-            for (int i = 0; i < parameters.Length;i++)
+            for (int i = 0; i < parameters.Length; i++)
             {
                 Console.WriteLine($"{parameters[i].Name} {parameters[i].ParameterType}");
                 try
                 {
-                    args[i]=inputConverter(parameters[i]);
+                    args[i] = inputConverter(parameters[i]);
                     Console.WriteLine();
-                }catch(Exception _)
+                }
+                catch (Exception _)
                 {
                     Console.WriteLine("the parameter is not valid");
                     return;
@@ -73,14 +74,14 @@ namespace CHANGENAME
         static dynamic inputConverter(ParameterInfo type)
         {
             string val = Console.ReadLine();
-            
+
             if (type.ParameterType.IsArray)
             {
                 string[] tab = val.Split(",");
                 dynamic res = Activator.CreateInstance(type.ParameterType, args: tab.Length);
-                for (int i = 0; i<tab.Length;i++)
+                for (int i = 0; i < tab.Length; i++)
                 {
-                    res[i]=(Converter(Type.GetTypeCode(type.ParameterType.GetElementType()),tab[i]));
+                    res[i] = (Converter(Type.GetTypeCode(type.ParameterType.GetElementType()), tab[i]));
                 }
                 return res;
             }
@@ -89,13 +90,13 @@ namespace CHANGENAME
                 return Converter(Type.GetTypeCode(type.ParameterType), val);
             }
         }
-        
-        static dynamic Converter(TypeCode code,dynamic val)
+
+        static dynamic Converter(TypeCode code, dynamic val)
         {
             switch (code)
             {
                 case TypeCode.Int32:
-                    val=Convert.ToInt32(val);
+                    val = Convert.ToInt32(val);
                     break;
                 case TypeCode.Boolean:
                     val = Convert.ToBoolean(val);
@@ -114,9 +115,9 @@ namespace CHANGENAME
         static void PrintArray(dynamic[] tab)
         {
             string res = "";
-            foreach(dynamic val in tab)
+            foreach (dynamic val in tab)
             {
-                res+=$"{val.ToString()} ";
+                res += $"{val.ToString()} ";
             }
             Console.WriteLine(res);
         }
